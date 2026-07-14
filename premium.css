@@ -1,0 +1,140 @@
+/* ==========================================================================
+   Terra Floor — Premium Design System
+   Слой глубины, света и тактильности поверх фирменной палитры.
+   Ничего не переопределяет цвета бренда — только объём, тени, движение.
+   ========================================================================== */
+
+:root{
+  /* многослойные тени — ambient (широкая, мягкая) + contact (узкая, чёткая) */
+  --shadow-xs:  0 1px 2px rgba(27,17,8,0.06), 0 1px 1px rgba(27,17,8,0.04);
+  --shadow-sm:  0 2px 6px rgba(27,17,8,0.07), 0 6px 16px -8px rgba(27,17,8,0.10);
+  --shadow-md:  0 4px 10px rgba(27,17,8,0.08), 0 14px 32px -14px rgba(27,17,8,0.16);
+  --shadow-lg:  0 8px 18px rgba(27,17,8,0.10), 0 28px 56px -20px rgba(27,17,8,0.22);
+  --shadow-xl:  0 14px 28px rgba(27,17,8,0.12), 0 46px 90px -28px rgba(27,17,8,0.30);
+  --shadow-inset: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(27,17,8,0.04);
+  --shadow-warm-glow: 0 0 0 rgba(193,101,46,0);
+
+  --ease-premium: cubic-bezier(.22,.9,.32,1);
+  --ease-spring:  cubic-bezier(.34,1.56,.64,1);
+
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Film grain — тончайший шум поверх всего сайта, чтобы плоские заливки
+   не выглядели "цифровыми". Крайне низкая непрозрачность, декоративный слой. */
+body{ position:relative; }
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:9998; pointer-events:none;
+  opacity:0.035;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:140px 140px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Header — сжатие, тень и лёгкое размытие при скролле                    */
+.site-header{
+  transition: height .38s var(--ease-premium), box-shadow .38s var(--ease-premium),
+              background .38s var(--ease-premium), border-color .38s var(--ease-premium);
+}
+.site-header.tf-scrolled{
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+}
+.site-header.tf-scrolled .wrap{ height:60px !important; }
+.site-header .wrap{ transition: height .38s var(--ease-premium); }
+
+/* ---------------------------------------------------------------------- */
+/* Кнопки — глубина, живой градиент, магнитный отклик, физика нажатия     */
+.btn{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  box-shadow: var(--shadow-xs);
+  transition: transform .32s var(--ease-spring), box-shadow .32s var(--ease-premium),
+              background .3s ease, border-color .3s ease, filter .3s ease;
+  will-change: transform;
+}
+.btn-primary{
+  background-image: linear-gradient(155deg, color-mix(in srgb, var(--clay) 100%, white 12%) 0%, var(--clay) 46%, var(--clay-dark) 100%);
+  box-shadow: var(--shadow-sm), 0 0 0 rgba(193,101,46,0);
+}
+.btn-primary:hover{
+  box-shadow: var(--shadow-md), 0 8px 24px -6px rgba(193,101,46,0.45);
+  filter: brightness(1.04);
+}
+.btn:active{ transform: scale(0.96) translateY(0) !important; transition-duration: .12s; }
+.btn::before{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.28) 45%, transparent 60%);
+  transform:translateX(-120%);
+  transition:transform .7s var(--ease-premium);
+  pointer-events:none;
+  z-index:1;
+}
+.btn:hover::before{ transform:translateX(120%); }
+.btn > *{ position:relative; z-index:2; }
+.btn-ghost, .btn-ghost-dark{ box-shadow: var(--shadow-xs); }
+.btn-ghost:hover, .btn-ghost-dark:hover{ box-shadow: var(--shadow-sm); }
+
+/* ---------------------------------------------------------------------- */
+/* Карточки — многослойная глубина + курсорный свет + мягкий 3D-тилт      */
+.tf-tilt{
+  position:relative;
+  transform-style:preserve-3d;
+  transition: transform .5s var(--ease-premium), box-shadow .5s var(--ease-premium);
+  box-shadow: var(--shadow-sm);
+  will-change: transform;
+}
+.tf-tilt::after{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  background:radial-gradient(480px circle at var(--tf-mx,50%) var(--tf-my,50%),
+              rgba(255,255,255,0.35), rgba(255,255,255,0) 55%);
+  opacity:0;
+  transition:opacity .4s ease;
+  pointer-events:none;
+  mix-blend-mode:soft-light;
+}
+.tf-tilt:hover{ box-shadow: var(--shadow-lg); }
+.tf-tilt:hover::after{ opacity:1; }
+.tf-tilt-flat:hover{ transform:none !important; }
+
+/* ---------------------------------------------------------------------- */
+/* Reveal-on-scroll — мягкое проявление вместо резкого fade                */
+.tf-reveal{
+  opacity:0;
+  transform:translateY(28px);
+  filter:blur(4px);
+  transition:opacity .9s var(--ease-premium), transform .9s var(--ease-premium), filter .9s var(--ease-premium);
+}
+.tf-reveal.tf-in{
+  opacity:1; transform:translateY(0); filter:blur(0);
+}
+.tf-reveal-stagger.tf-in{ transition-delay: var(--tf-delay, 0s); }
+
+/* ---------------------------------------------------------------------- */
+/* Формы — премиальный фокус                                              */
+input, select, textarea{
+  transition: border-color .28s var(--ease-premium), box-shadow .28s var(--ease-premium), background .28s ease;
+}
+input:focus, select:focus, textarea:focus{
+  outline:none;
+  border-color: var(--clay) !important;
+  box-shadow: 0 0 0 4px rgba(193,101,46,0.14), var(--shadow-xs);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Accessibility: уважаем reduced motion                                   */
+@media (prefers-reduced-motion: reduce){
+  .tf-reveal{ opacity:1 !important; transform:none !important; filter:none !important; transition:none !important; }
+  .tf-tilt{ transition:none !important; }
+  .btn::before{ display:none; }
+  body::before{ display:none; }
+}
